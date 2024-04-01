@@ -195,6 +195,9 @@
                         </div>
             
                     </div>
+                    <div id="form-success-message" class="alert alert-success" style="display: none;"></div>
+                    <div id="form-error-message" class="alert alert-danger" style="display: none;"></div>
+
                 </div>
             </section>
         </main>
@@ -299,23 +302,31 @@
 </html>
 
 <script>
-    $(document).ready(function(){
-        $('#contact-form').on('submit', function(e){
-            e.preventDefault(); // Prevent the default form submit action
-    
-            $.ajax({
-                url: '/contact', // The URL to your /contact route
-                type: 'POST',
-                data: $('#contact-form').serialize(), // Serialize the form data
-                success: function(response){
-                    // Display the success message
-                    $('#form-success-message').text(response.message).show();
-                },
-                error: function(xhr, textStatus, errorThrown){
-                    // Optionally handle the error here
-                    alert('There was an error sending your message. Please try again later.');
-                }
-            });
+$(document).ready(function(){
+    $('#contact-form').on('submit', function(e){
+        e.preventDefault(); // Prevent the default form submit action
+
+        $.ajax({
+            url: '/contact', // The URL to your /contact route
+            type: 'POST',
+            data: $('#contact-form').serialize(), // Serialize the form data
+            success: function(response){
+                // Hide any previous error message
+                $('#form-error-message').hide();
+                
+                // Display the success message
+                $('#form-success-message').text(response.message || "Your message has been sent successfully!").show();
+            },
+            error: function(xhr, textStatus, errorThrown){
+                // Hide any previous success message
+                $('#form-success-message').hide();
+
+                // Display the error message
+                // You can extract the error message from xhr.responseText or use a default message
+                let errorMessage = xhr.responseText || "There was an error sending your message. Please try again later.";
+                $('#form-error-message').text(errorMessage).show();
+            }
         });
     });
+});
     </script>
